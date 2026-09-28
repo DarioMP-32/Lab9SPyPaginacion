@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExpresoFast · Iniciar sesión</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="login-page">
+
+    <header class="login-header">
+        <span class="brand__mark">ExpresoFast</span>
+        <span class="brand__tag">Consola de operación logística</span>
+    </header>
+
+    <main class="login-main">
+        <section class="login-card" aria-labelledby="loginTitulo">
+            <h1 id="loginTitulo" class="login-card__title">Iniciar sesión</h1>
+            <p class="login-card__subtitle">Ingrese sus credenciales para acceder al tablero de envíos.</p>
+
+            <form id="loginForm" class="login-form" novalidate>
+                <label for="username">Usuario</label>
+                <input type="text" id="username" name="username" autocomplete="username" placeholder="admin"
+                    required>
+
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" name="password" autocomplete="current-password"
+                    placeholder="••••••••" required>
+
+                <button type="submit" class="btn-primary" id="btnLogin">Ingresar</button>
+
+                <p class="form-feedback" id="loginFeedback" role="alert" aria-live="polite"></p>
+            </form>
+
+            <details class="login-card__hint">
+                <summary>Usuarios de prueba</summary>
+                <table class="hint-table">
+                    <caption class="sr-only">Credenciales de usuarios de prueba por rol</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Usuario</th>
+                            <th scope="col">Contraseña</th>
+                            <th scope="col">Rol</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>admin</td>
+                            <td>Password123!</td>
+                            <td>ADMIN</td>
+                        </tr>
+                        <tr>
+                            <td>operador1</td>
+                            <td>Password123!</td>
+                            <td>OPERADOR</td>
+                        </tr>
+                        <tr>
+                            <td>conductor1</td>
+                            <td>Password123!</td>
+                            <td>CONDUCTOR</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </details>
+        </section>
+    </main>
+
+    <footer class="login-footer">
+        <p>&copy; 2026 ExpresoFast · IF0009 Desarrollo de Software IV · Sede del Atlántico, Recinto Paraíso</p>
+    </footer>
+
+    <script src="auth.js"></script>
+    <script>
+        if (obtenerToken() && !tokenExpirado()) {
+            window.location.href = 'dashboard.html';
+        }
+
+        const loginForm = document.getElementById('loginForm');
+        const loginFeedback = document.getElementById('loginFeedback');
+        const btnLogin = document.getElementById('btnLogin');
+
+        loginForm.addEventListener('submit', async (evento) => {
+            evento.preventDefault();
+            loginFeedback.textContent = '';
+            loginFeedback.className = 'form-feedback';
+            btnLogin.disabled = true;
+            btnLogin.textContent = 'Ingresando…';
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+
+            try {
+                const respuesta = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password }),
+                });
+
+                const datos = await respuesta.json().catch(() => null);
+
+                if (!respuesta.ok) {
+                    const mensaje = (datos && datos.message) || 'Usuario o contraseña incorrectos.';
+                    throw new Error(mensaje);
+                }
+
+                guardarSesion(datos);
+                window.location.href = 'dashboard.html';
+            } catch (error) {
+                loginFeedback.textContent = error.message;
+                loginFeedback.classList.add('error');
+                btnLogin.disabled = false;
+                btnLogin.textContent = 'Ingresar';
+            }
+        });
+    </script>
+</body>
+
+</html>

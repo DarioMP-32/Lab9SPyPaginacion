@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExpresoFast · Consola de operaciones</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <script src="auth.js"></script>
+    <script>exigirSesion();</script>
+
+    <header class="topbar">
+        <div class="brand">
+            <span class="brand__mark">ExpresoFast</span>
+            <span class="brand__tag">Consola de operación logística</span>
+        </div>
+        <div class="topbar__user">
+            <a class="link-nav" href="dashboard_paginado.html">Vista paginada</a>
+            <span class="topbar__username" id="nombreUsuarioActual">—</span>
+            <span class="role-badge" id="rolUsuarioActual">—</span>
+            <button class="btn-logout" id="btnLogout" type="button">Cerrar sesión</button>
+        </div>
+    </header>
+
+    <nav class="filtros" aria-label="Filtrar envíos por estado" id="panelFiltros">
+        <button class="filtro-tab is-active" data-filtro="TODOS" type="button">Todos</button>
+        <button class="filtro-tab" data-filtro="PENDIENTE" type="button">Pendientes</button>
+        <button class="filtro-tab" data-filtro="EN_TRANSITO" type="button">En tránsito</button>
+        <button class="filtro-tab" data-filtro="ENTREGADO" type="button">Entregados</button>
+    </nav>
+
+    <div class="layout">
+
+        <main class="board">
+
+            <section id="kpiSection" aria-label="Indicadores clave de operación">
+                <article class="kpi-card">
+                    <p class="kpi-card__label">Total envíos</p>
+                    <p class="kpi-card__valor" id="kpiTotalEnvios">—</p>
+                </article>
+                <article class="kpi-card">
+                    <p class="kpi-card__label">Vehículos activos</p>
+                    <p class="kpi-card__valor" id="kpiVehiculosActivos">—</p>
+                </article>
+                <article class="kpi-card">
+                    <p class="kpi-card__label">Paquetes entregados</p>
+                    <p class="kpi-card__valor" id="kpiEntregados">—</p>
+                </article>
+            </section>
+
+            <section class="intake" aria-labelledby="intakeTitulo" id="panelIntake" hidden>
+                <h2 id="intakeTitulo">Registrar envío</h2>
+                <form id="formEnvio" class="form-envio" novalidate>
+                    <div class="form-row">
+                        <div>
+                            <label for="codigoRastreo">Código de rastreo</label>
+                            <input type="text" id="codigoRastreo" name="codigoRastreo" placeholder="EXP-1234"
+                                pattern="EXP-\d{4}" required>
+                        </div>
+                        <div>
+                            <label for="direccionDestino">Dirección destino</label>
+                            <input type="text" id="direccionDestino" name="direccionDestino" placeholder="Cartago"
+                                required>
+                        </div>
+                        <div>
+                            <label for="pesoKg">Peso (kg)</label>
+                            <input type="number" id="pesoKg" name="pesoKg" step="0.01" min="0.01" required>
+                        </div>
+                        <div>
+                            <label for="costo">Costo (₡)</label>
+                            <input type="number" id="costo" name="costo" step="0.01" min="0.01" required>
+                        </div>
+                        <div>
+                            <label for="vehiculoId">ID vehículo</label>
+                            <input type="number" id="vehiculoId" name="vehiculoId" min="1" required>
+                        </div>
+                        <div>
+                            <label for="conductorId">ID conductor</label>
+                            <input type="number" id="conductorId" name="conductorId" min="1" required>
+                        </div>
+                        <div class="form-row__accion">
+                            <button type="submit" class="btn-primary">Registrar envío</button>
+                        </div>
+                    </div>
+                    <p class="form-feedback" id="formFeedback" role="alert" aria-live="polite"></p>
+                </form>
+            </section>
+
+            <section class="board__header">
+                <h1>Envíos</h1>
+                <p id="boardSubtitulo">Cargando manifiesto de envíos…</p>
+            </section>
+
+            <section id="enviosGrid" aria-live="polite"></section>
+
+        </main>
+
+        <aside id="panelAdmin" aria-label="Panel de administración" hidden>
+            <section aria-labelledby="bitacoraTitulo">
+                <h2 id="bitacoraTitulo">Bitácora de auditoría</h2>
+                <label for="selectorEnvioBitacora">Envío</label>
+                <select id="selectorEnvioBitacora">
+                    <option value="">Seleccione un envío…</option>
+                </select>
+                <div id="bitacoraBody" aria-live="polite">
+                    <p class="board__empty">Seleccione un envío para ver su historial.</p>
+                </div>
+            </section>
+
+            <section aria-labelledby="flotaTitulo">
+                <h2 id="flotaTitulo">Flota de vehículos</h2>
+                <form id="formVehiculo" class="form-vehiculo" novalidate>
+                    <label for="vehPlaca">Placa</label>
+                    <input type="text" id="vehPlaca" name="vehPlaca" placeholder="CL-123456" required>
+
+                    <label for="vehCapacidad">Capacidad (kg)</label>
+                    <input type="number" id="vehCapacidad" name="vehCapacidad" step="0.01" min="0.01" required>
+
+                    <label for="vehEstado">Estado</label>
+                    <select id="vehEstado" name="vehEstado" required>
+                        <option value="DISPONIBLE">Disponible</option>
+                        <option value="EN_RUTA">En ruta</option>
+                        <option value="MANTENIMIENTO">Mantenimiento</option>
+                    </select>
+
+                    <label for="vehEmpresaId">ID empresa</label>
+                    <input type="number" id="vehEmpresaId" name="vehEmpresaId" min="1" required>
+
+                    <button type="submit" class="btn-primary" id="btnGuardarVehiculo">Agregar vehículo</button>
+                    <p class="form-feedback" id="vehiculoFeedback" role="status" aria-live="polite"></p>
+                </form>
+
+                <table class="tabla-flota">
+                    <caption class="sr-only">Vehículos registrados en la flota</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Placa</th>
+                            <th scope="col">Capacidad</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaFlotaBody"></tbody>
+                </table>
+            </section>
+        </aside>
+
+    </div>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 ExpresoFast · IF0009 Desarrollo de Software IV</p>
+        <p><a href="mailto:soporte@expresofast.example">Soporte técnico</a> · <a
+                href="https://ie.paraiso.ucr.ac.cr" target="_blank" rel="noopener">Recinto de Paraíso, UCR</a></p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

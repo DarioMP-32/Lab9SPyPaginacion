@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExpresoFast · Envíos paginados</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <script src="auth.js"></script>
+    <script>exigirSesion();</script>
+
+    <header class="topbar">
+        <div class="brand">
+            <span class="brand__mark">ExpresoFast</span>
+            <span class="brand__tag">Consola de operación logística</span>
+        </div>
+        <div class="topbar__user">
+            <a class="link-nav" href="dashboard.html">&larr; Tablero</a>
+            <span class="topbar__username" id="nombreUsuarioActual">—</span>
+            <span class="role-badge" id="rolUsuarioActual">—</span>
+            <button class="btn-logout" id="btnLogout" type="button">Cerrar sesión</button>
+        </div>
+    </header>
+
+    <main class="paginado">
+
+        <section class="board__header">
+            <h1>Envíos (paginación relacional)</h1>
+            <p id="modoActual">Consulta paginada desde la base de datos.</p>
+        </section>
+
+        <form id="formFiltros" class="barra-filtros" role="search" aria-label="Filtros de envíos">
+            <div>
+                <label for="txtBusqueda">Buscar</label>
+                <input type="search" id="txtBusqueda" placeholder="Rastreo, destinatario o dirección">
+            </div>
+            <div>
+                <label for="selProcedimiento">Stored Procedure por estado</label>
+                <select id="selProcedimiento">
+                    <option value="">— Paginación normal —</option>
+                    <option value="PENDIENTE">SP: Pendientes</option>
+                    <option value="EN_TRANSITO">SP: En tránsito</option>
+                    <option value="ENTREGADO">SP: Entregados</option>
+                    <option value="CANCELADO">SP: Cancelados</option>
+                </select>
+            </div>
+            <div>
+                <label for="selTamano">Ítems por página</label>
+                <select id="selTamano">
+                    <option value="5" selected>5</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                </select>
+            </div>
+            <div class="form-row__accion acciones-filtro">
+                <button type="submit" class="btn-primary">Buscar</button>
+                <button type="button" class="btn-accion" id="btnLimpiar">Limpiar</button>
+            </div>
+        </form>
+
+        <div class="tabla-wrapper">
+            <table class="tabla-envios">
+                <caption class="sr-only">Guías de envío de ExpresoFast</caption>
+                <thead>
+                    <tr>
+                        <th scope="col" aria-sort="none">
+                            <button type="button" class="th-orden" data-sort="codigoRastreo">Rastreo <span
+                                    class="th-flecha" aria-hidden="true"></span></button>
+                        </th>
+                        <th scope="col" aria-sort="none">
+                            <button type="button" class="th-orden" data-sort="destinatario">Destinatario <span
+                                    class="th-flecha" aria-hidden="true"></span></button>
+                        </th>
+                        <th scope="col" aria-sort="none">
+                            <button type="button" class="th-orden" data-sort="direccionDestino">Dirección <span
+                                    class="th-flecha" aria-hidden="true"></span></button>
+                        </th>
+                        <th scope="col" aria-sort="none">
+                            <button type="button" class="th-orden" data-sort="montoFlete">Flete <span
+                                    class="th-flecha" aria-hidden="true"></span></button>
+                        </th>
+                        <th scope="col" aria-sort="none">
+                            <button type="button" class="th-orden" data-sort="estado">Estado <span class="th-flecha"
+                                    aria-hidden="true"></span></button>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyEnvios">
+                    <tr><td colspan="5">Cargando…</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <nav class="paginador" aria-label="Paginación de envíos">
+            <button type="button" id="btnPrimera" class="btn-accion">&lt;&lt; Primera</button>
+            <button type="button" id="btnAnterior" class="btn-accion">&lt; Anterior</button>
+            <p id="infoPaginador" class="paginador__info" role="status" aria-live="polite">—</p>
+            <button type="button" id="btnSiguiente" class="btn-accion">Siguiente &gt;</button>
+            <button type="button" id="btnUltima" class="btn-accion">Última &gt;&gt;</button>
+        </nav>
+
+        <section class="metricas" aria-labelledby="metricasTitulo">
+            <h2 id="metricasTitulo">Resumen de métricas (SP_RESUMEN_METRICAS_ENVIOS)</h2>
+            <button type="button" id="btnMetricas" class="btn-accion">Ejecutar procedimiento</button>
+            <table class="tabla-envios tabla-metricas" id="tablaMetricas" hidden>
+                <thead>
+                    <tr>
+                        <th scope="col">Estado</th>
+                        <th scope="col">Total envíos</th>
+                        <th scope="col">Flete acumulado</th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyMetricas"></tbody>
+            </table>
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 ExpresoFast · IF0009 Desarrollo de Software IV</p>
+    </footer>
+
+    <script src="dashboard_paginado.js"></script>
+</body>
+
+</html>
