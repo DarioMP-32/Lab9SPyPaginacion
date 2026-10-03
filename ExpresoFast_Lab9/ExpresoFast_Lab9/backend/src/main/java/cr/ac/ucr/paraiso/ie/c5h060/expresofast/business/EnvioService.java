@@ -9,7 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -36,7 +35,6 @@ import cr.ac.ucr.paraiso.ie.c5h060.expresofast.exception.ResourceNotFoundExcepti
 public class EnvioService {
 
     private static final Set<String> ESTADOS_VALIDOS = Set.of("PENDIENTE", "EN_TRANSITO", "ENTREGADO", "CANCELADO");
-    // Reto autonomo: un envio en estado final ya no puede "retroceder".
     private static final Set<String> ESTADOS_FINALES = Set.of("ENTREGADO", "CANCELADO");
     private static final Set<String> ESTADOS_NO_REGRESABLES = Set.of("PENDIENTE", "EN_TRANSITO");
 

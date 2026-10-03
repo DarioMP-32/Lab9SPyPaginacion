@@ -32,7 +32,8 @@ public class EnvioPaquetesController {
     @PostMapping("/con-paquetes")
     public ResponseEntity<EnvioConPaquetesResponseDTO> registrarConPaquetes(
             @Valid @RequestBody EnvioRegistroDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(envioPaquetesService.registrarConPaquetes(dto));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(envioPaquetesService.registrarConPaquetes(dto));
     }
 
     

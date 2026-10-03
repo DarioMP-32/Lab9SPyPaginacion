@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-ExpresofastApplication<expresofast>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "cr.ac.ucr.paraiso.ie.c5h060.expresofast.ExpresofastApplication",
+            "projectName": "expresofast",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
