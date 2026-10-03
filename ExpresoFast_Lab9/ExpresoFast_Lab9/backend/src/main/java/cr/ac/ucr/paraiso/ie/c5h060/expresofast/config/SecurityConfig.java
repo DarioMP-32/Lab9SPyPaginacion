@@ -75,6 +75,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/envios/check-tracking/*").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/envios/con-paquetes").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/envios/optimizados")
                         .hasAnyRole("ADMIN", "OPERADOR", "CONDUCTOR")
                         .requestMatchers(HttpMethod.POST, "/api/envios").hasAnyRole("ADMIN", "OPERADOR")

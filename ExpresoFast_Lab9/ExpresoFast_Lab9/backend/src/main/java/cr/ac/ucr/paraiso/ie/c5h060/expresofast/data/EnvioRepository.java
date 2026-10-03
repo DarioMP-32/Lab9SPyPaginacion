@@ -1,6 +1,7 @@
 package cr.ac.ucr.paraiso.ie.c5h060.expresofast.data;
 
-import cr.ac.ucr.paraiso.ie.c5h060.expresofast.domain.Envio;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,10 +11,13 @@ import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import cr.ac.ucr.paraiso.ie.c5h060.expresofast.domain.Envio;
 
 @Repository
 public interface EnvioRepository extends JpaRepository<Envio, Integer> {
+
+
+    boolean existsByCodigoRastreo(String codigoRastreo);
 
     @Query("SELECT e FROM Envio e " +
             "JOIN FETCH e.vehiculo v " +
