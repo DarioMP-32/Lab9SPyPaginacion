@@ -1,0 +1,139 @@
+<section class="tarjeta">
+  <h1>Registrar envío con múltiples paquetes</h1>
+  <p class="ayuda">Un número de rastreo puede contener varios paquetes de distinto peso.</p>
+
+  @if (envioCreado) {
+    <div class="alerta alerta--ok" role="status">
+      Envío <strong>{{ envioCreado.numeroTracking }}</strong> guardado (ID {{ envioCreado.id }})
+      con {{ envioCreado.paquetes.length }} paquete(s) · {{ envioCreado.pesoKg }} kg ·
+      vehículo {{ envioCreado.placaVehiculo }} · conductor {{ envioCreado.nombreConductor }}.
+    </div>
+  }
+
+  @if (errorServidor) {
+    <div class="alerta alerta--error" role="alert">{{ errorServidor }}</div>
+  }
+
+
+  <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+
+    <div class="campo">
+      <label for="tracking">Número de rastreo</label>
+      <input id="tracking" type="text" formControlName="numeroTracking"
+             placeholder="EXP-2026-1001" autocomplete="off" />
+
+      @if (tracking.pending) {
+        <small class="msg msg--info">Verificando disponibilidad…</small>
+      }
+      @if (tracking.touched || tracking.dirty) {
+        @if (tracking.hasError('required')) {
+          <small class="msg msg--error">El número de rastreo es obligatorio.</small>
+        }
+        @if (tracking.hasError('pattern')) {
+          <small class="msg msg--error">Use 5 a 30 caracteres: letras, números y guiones.</small>
+        }
+        @if (tracking.hasError('trackingTomado')) {
+          <small class="msg msg--error">Este número de rastreo ya está en uso</small>
+        }
+      }
+      @if (tracking.valid && tracking.dirty) {
+        <small class="msg msg--ok">Número disponible.</small>
+      }
+    </div>
+
+    <div class="fila">
+      <div class="campo">
+        <label for="destinatario">Destinatario</label>
+        <input id="destinatario" type="text" formControlName="destinatario" />
+        @if (form.controls.destinatario.touched && form.controls.destinatario.invalid) {
+          <small class="msg msg--error">El destinatario es obligatorio.</small>
+        }
+      </div>
+      <div class="campo">
+        <label for="direccion">Dirección de destino</label>
+        <input id="direccion" type="text" formControlName="direccionDestino" />
+        @if (form.controls.direccionDestino.touched && form.controls.direccionDestino.invalid) {
+          <small class="msg msg--error">La dirección es obligatoria.</small>
+        }
+      </div>
+    </div>
+
+    <div class="fila">
+      <div class="campo">
+        <label for="costo">Costo del envío</label>
+        <input id="costo" type="number" step="0.01" formControlName="costo" />
+        @if (form.controls.costo.touched && form.controls.costo.invalid) {
+          <small class="msg msg--error">Ingrese un costo mayor a cero.</small>
+        }
+      </div>
+      <div class="campo">
+        <label for="vehiculo">ID del vehículo</label>
+        <input id="vehiculo" type="number" step="1" formControlName="vehiculoId" placeholder="1" />
+        @if (form.controls.vehiculoId.touched && form.controls.vehiculoId.invalid) {
+          <small class="msg msg--error">Indique un ID de vehículo válido.</small>
+        }
+      </div>
+      <div class="campo">
+        <label for="conductor">ID del conductor</label>
+        <input id="conductor" type="number" step="1" formControlName="conductorId" placeholder="1" />
+        @if (form.controls.conductorId.touched && form.controls.conductorId.invalid) {
+          <small class="msg msg--error">Indique un ID de conductor válido.</small>
+        }
+      </div>
+    </div>
+
+    <div class="fila">
+      <div class="campo">
+        <label for="despacho">Fecha de despacho</label>
+        <input id="despacho" type="date" formControlName="fechaDespacho" />
+      </div>
+      <div class="campo">
+        <label for="entrega">Fecha de entrega estimada</label>
+        <input id="entrega" type="date" formControlName="fechaEntregaEstimada" />
+      </div>
+    </div>
+
+    @if (form.hasError('fechasInvalidas')) {
+      <div class="alerta alerta--error" role="alert">
+        La fecha de entrega estimada debe ser posterior a la fecha de despacho.
+      </div>
+    }
+
+    <div class="paquetes__cabecera">
+      <h2>Paquetes ({{ paquetes.length }}) · {{ pesoTotal }} kg en total</h2>
+      <button type="button" class="btn btn--sec" (click)="agregarPaquete()">+ Añadir Paquete</button>
+    </div>
+
+    <div formArrayName="paquetes">
+      @for (paquete of paquetes.controls; track paquete; let i = $index) {
+        <div class="paquete" [formGroupName]="i">
+          <div class="campo campo--grande">
+            <label [for]="'desc' + i">Descripción</label>
+            <input [id]="'desc' + i" type="text" formControlName="descripcion" />
+            @if (paquete.controls.descripcion.touched && paquete.controls.descripcion.invalid) {
+              <small class="msg msg--error">La descripción es obligatoria.</small>
+            }
+          </div>
+
+          <div class="campo campo--peso">
+            <label [for]="'peso' + i">Peso (kg)</label>
+            <input [id]="'peso' + i" type="number" step="0.01" formControlName="pesoKg" />
+            @if (paquete.controls.pesoKg.touched && paquete.controls.pesoKg.invalid) {
+              <small class="msg msg--error">Peso entre 0.01 y 999.99 kg.</small>
+            }
+          </div>
+
+          <button type="button" class="btn btn--x" (click)="eliminarPaquete(i)"
+                  [disabled]="paquetes.length === 1"
+                  [attr.aria-label]="'Eliminar paquete ' + (i + 1)">X</button>
+        </div>
+      }
+    </div>
+
+
+    <button type="submit" class="btn btn--principal"
+            [disabled]="form.invalid || form.pending || enviando">
+      {{ enviando ? 'Guardando…' : 'Registrar envío' }}
+    </button>
+  </form>
+</section>
